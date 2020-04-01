@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <title></title>
+  </head>
+  <style>
+    .mes-container{
+      height: 400px;
+      overflow: auto;
+    }
+    .mes-container li{
+      list-style: none;
+    }
+    #mainText{
+      width: 300px;
+    }
+  </style>
+  <body>
+    <ul class="mes-container" id="mainTextArea">
+    </ul>
+    <hr>
+    <div class="input-container">
+      <input id="mainText" type="text" onkeydown="handleKeyEvent(event.key)"/>
+      <button id="mainBtn" onclick="sendMes()">发送</button>
+    </div>
+    <div class="online" >
+      <span>当前在线人数</span>：<span id="onlineCount"></span>
+    </div>
+  </body>
+  <script>
+    let ws = null;
+    initWebsocket();
+    function initWebsocket() {
+      if ('WebSocket' in window) {
+        var hostname = location.hostname;
+        var protocol = location.protocol;
+        var wsProtocol = (protocol == 'https:' ? 'wss:': 'ws:')
+        ws = new WebSocket(wsProtocol + '//'+hostname+'/ws');
+        ws.onopen = function() {
+          console.log('success');
+        };
+
+        ws.onmessage = function(evt) {
+          printMes(JSON.parse(evt.data));
+        };
+
+        ws.onclose = function() {
+          ws = null;
+          console.log('close');
+        };
+      } else {
+        console.log('no support websocket');
+      }
+    }
+
+    function sendMes(text) {
+      console.log(text)
+      var mesText = text || document.getElementById('mainText').value;
+      ws.send(JSON.stringify(mesText));
+    }
+    // 消息打印到屏幕
+    function printMes(mes) {
+      let li = document.createElement('li');
+      li.innerHTML = mes.text;
+      var box = document.getElementById('mainTextArea')
+      box.appendChild(li);
+      document.getElementById('onlineCount').innerText = mes.count;
+      box.scrollTo(0,1000000)
+    }
+    function handleKeyEvent(e) {
+      console.log(e)
+      if(e == 'Enter') {
+        sendMes()
+      }
+    }
+    window.onbeforeunload=function(e){     
+      　sendMes('有人离开')
+    } 
+  </script>
+</html>

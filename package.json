@@ -1,0 +1,12 @@
+{
+  "name": "websocket-chat",
+  "version": "1.0.0",
+  "description": "websocket & http demo",
+  "author": "cold_day",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "ws": "^7.2.3"
+  }
+}
